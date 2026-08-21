@@ -1,30 +1,49 @@
-# Elevate
+# Elevate — AI Interview Coach
 
-Elevate is an AI-powered interview preparation app designed to help students and job seekers become more confident before an interview.
+## Project Description
 
-The app creates realistic interview questions based on the user's selected career field and allows users to practice answering them.
+Elevate is an AI-powered interview preparation web application.
 
-## Features
+The application allows users to:
 
-- AI-generated interview questions
-- Career-specific interview preparation
-- Behavioral interview questions
-- Technical interview questions
-- Practice interview mode
-- Answer evaluation
-- Feedback on interview responses
-- Suggestions for improving answers
-- Clean red-and-black interface
-- Responsive design for desktop and mobile
+- Enter their name
+- Enter a target job
+- Enter a company
+- Select an interview type
+- Practice interview questions
+- Submit answers
+- Receive AI-generated feedback
+- View communication, relevance, and specificity scores
+- See strengths
+- See areas for improvement
+- Receive an example of a stronger answer
+- Track previous practice sessions
 
-## Technologies
+---
 
-- HTML
-- CSS
+## Technologies Used
+
+### Frontend
+
+- HTML5
+- CSS3
 - JavaScript
+
+### Backend
+
 - Python
 - Flask
+- Flask-CORS
+
+### Artificial Intelligence
+
 - OpenAI API
+
+### Storage
+
+- Browser localStorage for practice history
+
+---
 
 ## Project Structure
 
@@ -36,6 +55,7 @@ Elevate/
 ├── script.js
 ├── app.py
 ├── requirements.txt
-├── .env
 ├── .gitignore
+├── .env
+├── .env.example
 └── README.md
