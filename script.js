@@ -1,199 +1,256 @@
-document.addEventListener("DOMContentLoaded", () => {
+const questions = {
+    behavioral: [
+        [
+            "Tell me about a time you faced a difficult challenge and how you handled it.",
+            "Behavioral"
+        ],
+        [
+            "Tell me about a time you worked with someone whose opinion differed from yours.",
+            "Behavioral"
+        ],
+        [
+            "Describe a time you took initiative without being asked.",
+            "Behavioral"
+        ],
+        [
+            "Tell me about a mistake you made and what you learned from it.",
+            "Behavioral"
+        ]
+    ],
 
-    const state = {
-        name: "",
-        job: "",
-        company: "",
-        type: "",
-        question: "",
-        questionNumber: 1,
-        history: []
-    };
+    technical: [
+        [
+            "Describe a technical problem you solved and how you approached it.",
+            "Technical"
+        ],
+        [
+            "How do you learn a new technology or programming language?",
+            "Technical"
+        ],
+        [
+            "Tell me about a project where you had to debug a difficult issue.",
+            "Technical"
+        ],
+        [
+            "How would you explain a technical concept to someone without a technical background?",
+            "Technical"
+        ]
+    ],
 
-
-    /* =========================
-       ELEMENTS
-    ========================== */
-
-    const nameInput = document.getElementById("name");
-    const jobInput = document.getElementById("job");
-    const companyInput = document.getElementById("company");
-    const typeInput = document.getElementById("interviewType");
-
-    const startButton = document.getElementById("startButton");
-    const submitAnswer = document.getElementById("submitAnswer");
-
-    const answerInput = document.getElementById("answer");
-    const characterCount = document.getElementById("characterCount");
-
-    const practiceSection = document.getElementById("practice");
-    const loadingSection = document.getElementById("loading");
-    const feedbackSection = document.getElementById("feedback");
-
-    const questionText = document.getElementById("questionText");
-    const questionNumber = document.getElementById("questionNumber");
-    const questionType = document.getElementById("questionType");
-
-    const candidateGreeting =
-        document.getElementById("candidateGreeting");
-
-    const setupError =
-        document.getElementById("setupError");
-
-
-    /* =========================
-       CHARACTER COUNT
-    ========================== */
-
-    answerInput.addEventListener("input", () => {
-
-        characterCount.textContent =
-            `${answerInput.value.length} characters`;
-
-    });
-
-
-    /* =========================
-       START INTERVIEW
-    ========================== */
-
-    startButton.addEventListener("click", async () => {
-
-        state.name = nameInput.value.trim();
-        state.job = jobInput.value.trim();
-        state.company = companyInput.value.trim();
-        state.type = typeInput.value;
-
-        if (!state.name || !state.job) {
-
-            setupError.textContent =
-                "Please enter your name and the position you're preparing for.";
-
-            return;
-
-        }
-
-        setupError.textContent = "";
-
-        candidateGreeting.textContent =
-            `${state.name}, take your time. Your goal is to show what you can bring to the role.`;
-
-        practiceSection.classList.remove("hidden");
-
-        practiceSection.scrollIntoView({
-            behavior: "smooth"
-        });
-
-        await getQuestion();
-
-    });
+    situational: [
+        [
+            "What would you do if you were given a deadline you believed was unrealistic?",
+            "Situational"
+        ],
+        [
+            "How would you handle a disagreement with a teammate?",
+            "Situational"
+        ],
+        [
+            "What would you do if you noticed an important mistake shortly before a presentation?",
+            "Situational"
+        ],
+        [
+            "How would you prioritize several urgent tasks at once?",
+            "Situational"
+        ]
+    ]
+};
 
 
-    /* =========================
-       GET QUESTION
-    ========================== */
+const els = {
+    name: document.getElementById("name"),
+    job: document.getElementById("job"),
+    company: document.getElementById("company"),
+    type: document.getElementById("interviewType"),
 
-    async function getQuestion() {
+    start: document.getElementById("startButton"),
+    reset: document.getElementById("resetButton"),
 
-        questionText.textContent =
-            "Creating your interview question...";
+    setupError: document.getElementById("setupError"),
 
-        submitAnswer.disabled = true;
+    practice: document.getElementById("practice"),
+    feedback: document.getElementById("feedback"),
+    loading: document.getElementById("loading"),
 
-        try {
+    answer: document.getElementById("answer"),
+    count: document.getElementById("characterCount"),
+    submit: document.getElementById("submitAnswer"),
 
-            const response = await fetch("/api/question", {
+    next: document.getElementById("nextQuestion"),
+    again: document.getElementById("tryAgain"),
 
-                method: "POST",
+    qNumber: document.getElementById("questionNumber"),
+    qType: document.getElementById("questionType"),
+    qText: document.getElementById("questionText"),
 
-                headers: {
-                    "Content-Type": "application/json"
-                },
+    greeting: document.getElementById("candidateGreeting"),
 
-                body: JSON.stringify({
+    overall: document.getElementById("overallScore"),
+    overallComment: document.getElementById("overallComment"),
 
-                    name: state.name,
-                    job: state.job,
-                    company: state.company,
-                    type: state.type
+    communication: document.getElementById("communicationScore"),
+    relevance: document.getElementById("relevanceScore"),
+    specificity: document.getElementById("specificityScore"),
 
-                })
+    strengths: document.getElementById("strengthsList"),
+    improvements: document.getElementById("improvementsList"),
 
-            });
+    model: document.getElementById("modelAnswer"),
 
-
-            const data = await response.json();
-
-
-            if (!response.ok) {
-                throw new Error(data.error || "Unable to create question.");
-            }
+    history: document.getElementById("historyList")
+};
 
 
-            state.question = data.question;
+let session = {
+    name: "",
+    job: "",
+    company: "",
+    type: "behavioral",
+    index: 0,
+    questionSet: []
+};
 
-            questionText.textContent =
-                data.question;
 
-            questionType.textContent =
-                state.type.toUpperCase();
+function getQuestionSet(type) {
 
-            questionNumber.textContent =
-                `QUESTION ${state.questionNumber}`;
+    if (type === "mixed") {
 
-            answerInput.value = "";
-
-            characterCount.textContent =
-                "0 characters";
-
-            submitAnswer.disabled = false;
-
-        }
-
-        catch (error) {
-
-            questionText.textContent =
-                "Something went wrong.";
-
-            setupError.textContent =
-                error.message;
-
-        }
+        return [
+            ...questions.behavioral.slice(0, 2),
+            ...questions.technical.slice(0, 1),
+            ...questions.situational.slice(0, 1)
+        ];
 
     }
 
+    return questions[type];
 
-    /* =========================
-       SUBMIT ANSWER
-    ========================== */
-
-    submitAnswer.addEventListener("click", async () => {
-
-        const answer = answerInput.value.trim();
-
-        if (answer.length < 20) {
-
-            alert(
-                "Try giving a little more detail. A strong interview answer usually includes a specific example."
-            );
-
-            return;
-
-        }
+}
 
 
-        practiceSection.classList.add("hidden");
+function updateCount() {
 
-        loadingSection.classList.remove("hidden");
+    const count = els.answer.value.length;
 
-        loadingSection.scrollIntoView({
-            behavior: "smooth"
-        });
+    els.count.textContent =
+        `${count.toLocaleString()} character${count === 1 ? "" : "s"}`;
+
+}
 
 
-        try {
+function renderQuestion() {
 
-            const response = await fetch("/api/evaluate", {
+    const current =
+        session.questionSet[session.index];
+
+    if (!current) {
+        return;
+    }
+
+    els.qNumber.textContent =
+        `QUESTION ${session.index + 1} OF ${session.questionSet.length}`;
+
+    els.qType.textContent =
+        current[1].toUpperCase();
+
+    els.qText.textContent =
+        current[0];
+
+    els.answer.value = "";
+
+    updateCount();
+
+    els.feedback.classList.add("hidden");
+
+    els.loading.classList.add("hidden");
+
+    setTimeout(() => {
+        els.answer.focus();
+    }, 250);
+}
+
+
+function startSession() {
+
+    const name =
+        els.name.value.trim();
+
+    const job =
+        els.job.value.trim();
+
+    if (!name || !job) {
+
+        els.setupError.textContent =
+            "Please enter your name and the position you are practicing for.";
+
+        return;
+    }
+
+    els.setupError.textContent = "";
+
+    session = {
+        name: name,
+        job: job,
+        company: els.company.value.trim(),
+        type: els.type.value,
+        index: 0,
+        questionSet: getQuestionSet(els.type.value)
+    };
+
+    els.greeting.textContent =
+        `Good luck, ${name}. Take your time — a strong answer is better than a fast answer.`;
+
+    renderQuestion();
+
+    els.practice.classList.remove("hidden");
+
+    els.practice.scrollIntoView({
+        behavior: "smooth",
+        block: "start"
+    });
+}
+
+
+async function getAIFeedback() {
+
+    const answer =
+        els.answer.value.trim();
+
+    if (answer.length < 25) {
+
+        els.count.textContent =
+            "Please write a little more before requesting AI feedback.";
+
+        els.count.style.color = "#b33b50";
+
+        els.answer.focus();
+
+        return;
+    }
+
+    els.count.style.color = "";
+
+    const question =
+        els.qText.textContent;
+
+    const type =
+        session.type;
+
+    els.feedback.classList.add("hidden");
+
+    els.loading.classList.remove("hidden");
+
+    els.loading.scrollIntoView({
+        behavior: "smooth",
+        block: "center"
+    });
+
+
+    try {
+
+        const response =
+            await fetch("/api/feedback", {
 
                 method: "POST",
 
@@ -203,11 +260,16 @@ document.addEventListener("DOMContentLoaded", () => {
 
                 body: JSON.stringify({
 
-                    name: state.name,
-                    job: state.job,
-                    company: state.company,
-                    type: state.type,
-                    question: state.question,
+                    name: session.name,
+
+                    job: session.job,
+
+                    company: session.company,
+
+                    interview_type: type,
+
+                    question: question,
+
                     answer: answer
 
                 })
@@ -215,266 +277,341 @@ document.addEventListener("DOMContentLoaded", () => {
             });
 
 
-            const data = await response.json();
+        const data =
+            await response.json();
 
 
-            if (!response.ok) {
-                throw new Error(data.error || "Unable to evaluate answer.");
-            }
+        if (!response.ok) {
 
-
-            displayFeedback(data);
-
-            saveHistory(data);
-
-            loadingSection.classList.add("hidden");
-
-            feedbackSection.classList.remove("hidden");
-
-            feedbackSection.scrollIntoView({
-                behavior: "smooth"
-            });
+            throw new Error(
+                data.error ||
+                "Something went wrong while getting AI feedback."
+            );
 
         }
 
-        catch (error) {
 
-            loadingSection.classList.add("hidden");
+        displayFeedback(data);
 
-            practiceSection.classList.remove("hidden");
+        saveHistory(data);
 
-            alert(error.message);
+        renderHistory();
 
-        }
+        els.loading.classList.add("hidden");
+
+        els.feedback.classList.remove("hidden");
+
+        els.feedback.scrollIntoView({
+            behavior: "smooth",
+            block: "start"
+        });
+
+
+    } catch (error) {
+
+        console.error(error);
+
+        els.loading.classList.add("hidden");
+
+        els.feedback.classList.remove("hidden");
+
+        els.overall.textContent = "—";
+
+        els.overallComment.textContent =
+            error.message ||
+            "Unable to connect to Elevate AI.";
+
+        els.communication.textContent = "—";
+        els.relevance.textContent = "—";
+        els.specificity.textContent = "—";
+
+        els.strengths.innerHTML =
+            "<li>Please make sure the Flask server is running.</li>";
+
+        els.improvements.innerHTML =
+            "<li>Check your API key and server configuration.</li>";
+
+        els.model.textContent =
+            "AI feedback could not be generated.";
+
+    }
+
+}
+
+
+function displayFeedback(data) {
+
+    els.overall.textContent =
+        data.overall_score;
+
+    els.communication.textContent =
+        data.communication_score;
+
+    els.relevance.textContent =
+        data.relevance_score;
+
+    els.specificity.textContent =
+        data.specificity_score;
+
+    els.overallComment.textContent =
+        data.overall_comment;
+
+
+    els.strengths.innerHTML =
+        data.strengths
+            .map(item => `<li>${escapeHTML(item)}</li>`)
+            .join("");
+
+
+    els.improvements.innerHTML =
+        data.improvements
+            .map(item => `<li>${escapeHTML(item)}</li>`)
+            .join("");
+
+
+    els.model.textContent =
+        data.stronger_answer;
+
+}
+
+
+function escapeHTML(value) {
+
+    const div =
+        document.createElement("div");
+
+    div.textContent =
+        value;
+
+    return div.innerHTML;
+
+}
+
+
+function saveHistory(data) {
+
+    const history =
+        JSON.parse(
+            localStorage.getItem("elevateHistory") ||
+            "[]"
+        );
+
+
+    history.unshift({
+
+        date:
+            new Date().toLocaleString(),
+
+        question:
+            els.qText.textContent,
+
+        score:
+            data.overall_score,
+
+        job:
+            session.job
 
     });
 
 
-    /* =========================
-       DISPLAY FEEDBACK
-    ========================== */
+    localStorage.setItem(
+        "elevateHistory",
+        JSON.stringify(history.slice(0, 12))
+    );
 
-    function displayFeedback(data) {
-
-        document.getElementById("overallScore").textContent =
-            data.scores.overall;
-
-        document.getElementById("communicationScore").textContent =
-            data.scores.communication;
-
-        document.getElementById("relevanceScore").textContent =
-            data.scores.relevance;
-
-        document.getElementById("specificityScore").textContent =
-            data.scores.specificity;
+}
 
 
-        document.getElementById("overallComment").textContent =
-            data.overall_comment;
+function renderHistory() {
 
-
-        populateList(
-            "strengthsList",
-            data.strengths
+    const history =
+        JSON.parse(
+            localStorage.getItem("elevateHistory") ||
+            "[]"
         );
 
 
-        populateList(
-            "improvementsList",
-            data.improvements
-        );
+    if (!history.length) {
 
+        els.history.innerHTML = `
+            <div class="empty-history">
+                <span>✦</span>
 
-        document.getElementById("modelAnswer").textContent =
-            data.model_answer;
+                <h3>
+                    No practice sessions yet.
+                </h3>
 
+                <p>
+                    Complete your first question and
+                    your progress will appear here.
+                </p>
+            </div>
+        `;
+
+        return;
     }
 
 
-    /* =========================
-       LIST HELPER
-    ========================== */
+    els.history.innerHTML =
+        history.map(item => `
 
-    function populateList(id, items) {
+            <div class="history-item">
 
-        const list = document.getElementById(id);
+                <div>
 
-        list.innerHTML = "";
+                    <strong>
+                        ${escapeHTML(item.job)}
+                    </strong>
 
-        items.forEach(item => {
-
-            const li = document.createElement("li");
-
-            li.textContent = item;
-
-            list.appendChild(li);
-
-        });
-
-    }
-
-
-    /* =========================
-       HISTORY
-    ========================== */
-
-    function saveHistory(data) {
-
-        state.history.unshift({
-
-            question: state.question,
-
-            score: data.scores.overall,
-
-            comment: data.overall_comment,
-
-            date: new Date().toLocaleDateString()
-
-        });
-
-
-        renderHistory();
-
-    }
-
-
-    function renderHistory() {
-
-        const historyList =
-            document.getElementById("historyList");
-
-
-        if (state.history.length === 0) {
-
-            return;
-
-        }
-
-
-        historyList.innerHTML = "";
-
-
-        state.history.forEach(item => {
-
-            const article =
-                document.createElement("article");
-
-            article.className =
-                "history-item";
-
-
-            article.innerHTML = `
-
-                <div class="history-item-top">
-
-                    <h3>
+                    <div class="history-meta">
+                        ${escapeHTML(item.date)}
+                        ·
                         ${escapeHTML(item.question)}
-                    </h3>
-
-                    <span class="score">
-                        ${item.score}/100
-                    </span>
+                    </div>
 
                 </div>
 
-                <p>
-                    ${escapeHTML(item.comment)}
-                </p>
+                <strong>
+                    ${item.score}/100
+                </strong>
 
-                <p>
-                    ${item.date}
-                </p>
+            </div>
 
-            `;
+        `).join("");
+
+}
 
 
-            historyList.appendChild(article);
+function resetSession() {
 
+    session = {
+        name: "",
+        job: "",
+        company: "",
+        type: "behavioral",
+        index: 0,
+        questionSet: []
+    };
+
+    els.name.value = "";
+    els.job.value = "";
+    els.company.value = "";
+
+    els.type.value =
+        "behavioral";
+
+    els.answer.value = "";
+
+    els.setupError.textContent = "";
+
+    els.practice.classList.add("hidden");
+
+    els.feedback.classList.add("hidden");
+
+    els.loading.classList.add("hidden");
+
+    updateCount();
+
+    window.scrollTo({
+        top: 0,
+        behavior: "smooth"
+    });
+
+}
+
+
+els.start.addEventListener(
+    "click",
+    startSession
+);
+
+
+els.submit.addEventListener(
+    "click",
+    getAIFeedback
+);
+
+
+els.answer.addEventListener(
+    "input",
+    updateCount
+);
+
+
+els.reset.addEventListener(
+    "click",
+    resetSession
+);
+
+
+els.next.addEventListener(
+    "click",
+    () => {
+
+        if (!session.questionSet.length) {
+            return;
+        }
+
+        session.index++;
+
+        if (
+            session.index >=
+            session.questionSet.length
+        ) {
+
+            alert(
+                "You completed this practice set! Starting again from Question 1."
+            );
+
+            session.index = 0;
+        }
+
+        renderQuestion();
+
+        els.practice.scrollIntoView({
+            behavior: "smooth",
+            block: "start"
         });
 
     }
+);
 
 
-    /* =========================
-       NEXT QUESTION
-    ========================== */
+els.again.addEventListener(
+    "click",
+    () => {
 
-    document
-        .getElementById("nextQuestion")
-        .addEventListener("click", async () => {
+        els.feedback.classList.add("hidden");
 
-            state.questionNumber++;
+        els.answer.focus();
 
-            feedbackSection.classList.add("hidden");
-
-            practiceSection.classList.remove("hidden");
-
-            practiceSection.scrollIntoView({
-                behavior: "smooth"
-            });
-
-            await getQuestion();
-
+        els.answer.scrollIntoView({
+            behavior: "smooth",
+            block: "center"
         });
-
-
-    /* =========================
-       TRY AGAIN
-    ========================== */
-
-    document
-        .getElementById("tryAgain")
-        .addEventListener("click", () => {
-
-            feedbackSection.classList.add("hidden");
-
-            practiceSection.classList.remove("hidden");
-
-            answerInput.focus();
-
-            practiceSection.scrollIntoView({
-                behavior: "smooth"
-            });
-
-        });
-
-
-    /* =========================
-       NEW SESSION
-    ========================== */
-
-    document
-        .getElementById("resetButton")
-        .addEventListener("click", () => {
-
-            state.questionNumber = 1;
-            state.history = [];
-
-            practiceSection.classList.add("hidden");
-            feedbackSection.classList.add("hidden");
-
-            document
-                .getElementById("setup")
-                .scrollIntoView({
-                    behavior: "smooth"
-                });
-
-        });
-
-
-    /* =========================
-       SECURITY HELPER
-    ========================== */
-
-    function escapeHTML(value) {
-
-        const div =
-            document.createElement("div");
-
-        div.textContent = value;
-
-        return div.innerHTML;
 
     }
+);
 
-});
+
+document.addEventListener(
+    "keydown",
+    event => {
+
+        if (
+            (event.metaKey || event.ctrlKey) &&
+            event.key === "Enter" &&
+            !els.practice.classList.contains("hidden")
+        ) {
+
+            getAIFeedback();
+
+        }
+
+    }
+);
+
+
+renderHistory();
+
+updateCount();
