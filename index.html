@@ -4,602 +4,673 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
+    <meta
+        name="description"
+        content="Elevate is an AI-powered interview practice coach."
+    >
+
     <title>Elevate | AI Interview Coach</title>
 
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 
-    <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Playfair+Display:wght@500;600;700&display=swap" rel="stylesheet">
+    <link
+        href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Playfair+Display:wght@500;600;700&display=swap"
+        rel="stylesheet"
+    >
 
     <link rel="stylesheet" href="style.css">
 </head>
 
 <body>
 
-    <!-- =========================
-         NAVIGATION
-    ========================== -->
+<header class="navbar">
 
-    <header class="navbar">
+    <a href="#" class="logo">
+        ele<span>vate</span>
+    </a>
 
-        <a href="#" class="logo">
-            ele<span>vate</span>
+    <nav aria-label="Main navigation">
+        <a href="#setup">Practice</a>
+        <a href="#feedback">Feedback</a>
+        <a href="#history">History</a>
+    </nav>
+
+    <button
+        id="resetButton"
+        class="nav-button"
+        type="button"
+    >
+        New Session
+    </button>
+
+</header>
+
+
+<main>
+
+<!-- HERO -->
+
+<section class="hero">
+
+    <div class="hero-content">
+
+        <p class="eyebrow">
+            AI INTERVIEW COACH
+        </p>
+
+        <h1>
+            Practice with purpose.
+            <em>Interview with confidence.</em>
+        </h1>
+
+        <p class="hero-text">
+            Elevate helps you prepare for real interviews by asking
+            thoughtful questions, analyzing your answers with AI,
+            and showing you exactly how to improve.
+        </p>
+
+        <a
+            href="#setup"
+            class="primary-button"
+        >
+            Start Practicing
+            <span>→</span>
         </a>
 
-        <nav>
-            <a href="#practice">Practice</a>
-            <a href="#feedback">Feedback</a>
-            <a href="#history">History</a>
-        </nav>
+    </div>
 
-        <button id="resetButton" class="nav-button">
-            New Session
+
+    <div class="hero-card">
+
+        <div class="card-label">
+            ELEVATE AI
+        </div>
+
+        <div class="score-preview">
+
+            <span>
+                Interview Score
+            </span>
+
+            <strong>
+                92
+            </strong>
+
+            <small>
+                Excellent progress
+            </small>
+
+        </div>
+
+
+        <div class="mini-bars">
+
+            <div>
+                <span>Communication</span>
+                <b style="width:92%"></b>
+            </div>
+
+            <div>
+                <span>Relevance</span>
+                <b style="width:86%"></b>
+            </div>
+
+            <div>
+                <span>Specificity</span>
+                <b style="width:78%"></b>
+            </div>
+
+        </div>
+
+    </div>
+
+</section>
+
+
+<!-- SETUP -->
+
+<section
+    id="setup"
+    class="section setup-section"
+>
+
+    <div class="section-heading">
+
+        <p class="eyebrow">
+            STEP 01
+        </p>
+
+        <h2>
+            Tell us about your interview.
+        </h2>
+
+        <p>
+            We'll use this information to personalize
+            your interview practice.
+        </p>
+
+    </div>
+
+
+    <div class="setup-card">
+
+        <div class="form-group">
+
+            <label for="name">
+                Your name
+            </label>
+
+            <input
+                id="name"
+                type="text"
+                placeholder="e.g. Pranaya"
+                maxlength="50"
+            >
+
+        </div>
+
+
+        <div class="form-group">
+
+            <label for="job">
+                Job or position
+            </label>
+
+            <input
+                id="job"
+                type="text"
+                placeholder="e.g. Software Engineer"
+                maxlength="100"
+            >
+
+        </div>
+
+
+        <div class="form-group">
+
+            <label for="company">
+                Company
+            </label>
+
+            <input
+                id="company"
+                type="text"
+                placeholder="e.g. Google"
+                maxlength="100"
+            >
+
+        </div>
+
+
+        <div class="form-group">
+
+            <label for="interviewType">
+                Interview type
+            </label>
+
+            <select id="interviewType">
+
+                <option value="behavioral">
+                    Behavioral
+                </option>
+
+                <option value="technical">
+                    Technical
+                </option>
+
+                <option value="situational">
+                    Situational
+                </option>
+
+                <option value="mixed">
+                    Mixed
+                </option>
+
+            </select>
+
+        </div>
+
+
+        <button
+            id="startButton"
+            class="primary-button full-width"
+            type="button"
+        >
+            Begin Interview
+            <span>→</span>
         </button>
 
-    </header>
+
+        <p
+            id="setupError"
+            class="error"
+            role="alert"
+        ></p>
+
+    </div>
+
+</section>
 
 
-    <!-- =========================
-         HERO
-    ========================== -->
+<!-- PRACTICE -->
 
-    <main>
+<section
+    id="practice"
+    class="section practice-section hidden"
+>
 
-        <section class="hero">
+    <div class="section-heading">
 
-            <div class="hero-content">
+        <p class="eyebrow">
+            STEP 02
+        </p>
 
-                <p class="eyebrow">
-                    AI INTERVIEW COACH
-                </p>
+        <h2>
+            Your interview starts now.
+        </h2>
 
-                <h1>
-                    Practice with purpose.
-                    <em>Interview with confidence.</em>
-                </h1>
+        <p id="candidateGreeting">
+            Take your time.
+            A strong answer is better than a fast answer.
+        </p>
 
-                <p class="hero-text">
-                    Elevate helps you prepare for real interviews by
-                    asking thoughtful questions, analyzing your answers,
-                    and showing you exactly how to improve.
-                </p>
-
-                <a href="#setup" class="primary-button">
-                    Start Practicing →
-                </a>
-
-            </div>
-
-            <div class="hero-card">
-
-                <div class="card-label">
-                    ELEVATE AI
-                </div>
-
-                <div class="score-preview">
-                    <span>Interview Score</span>
-                    <strong>92</strong>
-                    <small>Excellent progress</small>
-                </div>
-
-                <div class="mini-bars">
-                    <div>
-                        <span>Communication</span>
-                        <b style="width: 92%"></b>
-                    </div>
-
-                    <div>
-                        <span>Relevance</span>
-                        <b style="width: 86%"></b>
-                    </div>
-
-                    <div>
-                        <span>Specificity</span>
-                        <b style="width: 78%"></b>
-                    </div>
-                </div>
-
-            </div>
-
-        </section>
+    </div>
 
 
-        <!-- =========================
-             SETUP
-        ========================== -->
+    <div class="interview-layout">
 
-        <section id="setup" class="section setup-section">
+        <div class="question-card">
 
-            <div class="section-heading">
+            <div class="question-top">
 
-                <p class="eyebrow">
-                    STEP 01
-                </p>
+                <span id="questionNumber">
+                    QUESTION 1
+                </span>
 
-                <h2>
-                    Tell us about your interview.
-                </h2>
-
-                <p>
-                    We'll use this information to personalize
-                    your practice questions.
-                </p>
+                <span id="questionType">
+                    BEHAVIORAL
+                </span>
 
             </div>
 
 
-            <div class="setup-card">
+            <h3 id="questionText">
+                Tell me about a time you faced
+                a difficult challenge and how
+                you handled it.
+            </h3>
 
-                <div class="form-group">
 
-                    <label for="name">
-                        Your name
-                    </label>
+            <div class="answer-area">
 
-                    <input
-                        id="name"
-                        type="text"
-                        placeholder="e.g. Pranaya"
-                        maxlength="50"
+                <label for="answer">
+                    Your answer
+                </label>
+
+                <textarea
+                    id="answer"
+                    rows="10"
+                    placeholder="Write your answer here. Try using the STAR method: Situation, Task, Action, Result."
+                ></textarea>
+
+
+                <div class="answer-footer">
+
+                    <span id="characterCount">
+                        0 characters
+                    </span>
+
+                    <button
+                        id="submitAnswer"
+                        class="primary-button"
+                        type="button"
                     >
+                        Get AI Feedback
+                        <span>→</span>
+                    </button>
 
                 </div>
-
-
-                <div class="form-group">
-
-                    <label for="job">
-                        Job or position
-                    </label>
-
-                    <input
-                        id="job"
-                        type="text"
-                        placeholder="e.g. Software Engineer"
-                        maxlength="100"
-                    >
-
-                </div>
-
-
-                <div class="form-group">
-
-                    <label for="company">
-                        Company
-                    </label>
-
-                    <input
-                        id="company"
-                        type="text"
-                        placeholder="e.g. Google"
-                        maxlength="100"
-                    >
-
-                </div>
-
-
-                <div class="form-group">
-
-                    <label for="interviewType">
-                        Interview type
-                    </label>
-
-                    <select id="interviewType">
-
-                        <option value="behavioral">
-                            Behavioral
-                        </option>
-
-                        <option value="technical">
-                            Technical
-                        </option>
-
-                        <option value="situational">
-                            Situational
-                        </option>
-
-                        <option value="mixed">
-                            Mixed
-                        </option>
-
-                    </select>
-
-                </div>
-
-
-                <button
-                    id="startButton"
-                    class="primary-button full-width"
-                >
-                    Begin Interview →
-                </button>
-
-                <p id="setupError" class="error"></p>
 
             </div>
 
-        </section>
+        </div>
 
 
-        <!-- =========================
-             PRACTICE
-        ========================== -->
+        <aside class="tips-card">
 
-        <section id="practice" class="section practice-section hidden">
-
-            <div class="section-heading">
-
-                <p class="eyebrow">
-                    STEP 02
-                </p>
-
-                <h2>
-                    Your interview starts now.
-                </h2>
-
-                <p id="candidateGreeting">
-                    Take your time. A strong answer is better than a fast answer.
-                </p>
-
-            </div>
-
-
-            <div class="interview-layout">
-
-                <div class="question-card">
-
-                    <div class="question-top">
-
-                        <span id="questionNumber">
-                            QUESTION 1
-                        </span>
-
-                        <span id="questionType">
-                            BEHAVIORAL
-                        </span>
-
-                    </div>
-
-
-                    <h3 id="questionText">
-                        Tell me about a time you faced a difficult
-                        challenge and how you handled it.
-                    </h3>
-
-
-                    <div class="answer-area">
-
-                        <label for="answer">
-                            Your answer
-                        </label>
-
-                        <textarea
-                            id="answer"
-                            placeholder="Write your answer here. Try using the STAR method: Situation, Task, Action, Result."
-                            rows="10"
-                        ></textarea>
-
-                        <div class="answer-footer">
-
-                            <span id="characterCount">
-                                0 characters
-                            </span>
-
-                            <button
-                                id="submitAnswer"
-                                class="primary-button"
-                            >
-                                Get AI Feedback →
-                            </button>
-
-                        </div>
-
-                    </div>
-
-                </div>
-
-
-                <aside class="tips-card">
-
-                    <p class="eyebrow">
-                        QUICK TIP
-                    </p>
-
-                    <h3>
-                        Use the STAR method.
-                    </h3>
-
-                    <div class="tip">
-
-                        <strong>S</strong>
-
-                        <span>
-                            Situation — Set the scene.
-                        </span>
-
-                    </div>
-
-                    <div class="tip">
-
-                        <strong>T</strong>
-
-                        <span>
-                            Task — Explain your responsibility.
-                        </span>
-
-                    </div>
-
-                    <div class="tip">
-
-                        <strong>A</strong>
-
-                        <span>
-                            Action — Explain what you did.
-                        </span>
-
-                    </div>
-
-                    <div class="tip">
-
-                        <strong>R</strong>
-
-                        <span>
-                            Result — Show what happened.
-                        </span>
-
-                    </div>
-
-                </aside>
-
-            </div>
-
-        </section>
-
-
-        <!-- =========================
-             LOADING
-        ========================== -->
-
-        <section id="loading" class="loading-section hidden">
-
-            <div class="loader"></div>
-
-            <h2>
-                Elevate AI is reviewing your answer...
-            </h2>
-
-            <p>
-                Looking at clarity, relevance, specificity,
-                communication, and impact.
+            <p class="eyebrow">
+                QUICK TIP
             </p>
 
-        </section>
+            <h3>
+                Use the STAR method.
+            </h3>
 
 
-        <!-- =========================
-             FEEDBACK
-        ========================== -->
+            <div class="tip">
 
-        <section id="feedback" class="section feedback-section hidden">
+                <strong>S</strong>
 
-            <div class="section-heading">
-
-                <p class="eyebrow">
-                    STEP 03
-                </p>
-
-                <h2>
-                    Here's how you did.
-                </h2>
-
-                <p>
-                    Honest feedback designed to help you get better.
-                </p>
+                <span>
+                    <b>Situation</b>
+                    — Set the scene.
+                </span>
 
             </div>
 
 
-            <div class="feedback-grid">
+            <div class="tip">
 
-                <div class="score-card">
+                <strong>T</strong>
 
-                    <span>OVERALL</span>
-
-                    <strong id="overallScore">
-                        —
-                    </strong>
-
-                    <p id="overallComment">
-                        Your score will appear here.
-                    </p>
-
-                </div>
-
-
-                <div class="score-card">
-
-                    <span>COMMUNICATION</span>
-
-                    <strong id="communicationScore">
-                        —
-                    </strong>
-
-                    <p>
-                        How clearly you expressed your ideas.
-                    </p>
-
-                </div>
-
-
-                <div class="score-card">
-
-                    <span>RELEVANCE</span>
-
-                    <strong id="relevanceScore">
-                        —
-                    </strong>
-
-                    <p>
-                        How directly your answer addressed the question.
-                    </p>
-
-                </div>
-
-
-                <div class="score-card">
-
-                    <span>SPECIFICITY</span>
-
-                    <strong id="specificityScore">
-                        —
-                    </strong>
-
-                    <p>
-                        How effectively you used concrete examples.
-                    </p>
-
-                </div>
+                <span>
+                    <b>Task</b>
+                    — Explain your responsibility.
+                </span>
 
             </div>
 
 
-            <div class="feedback-columns">
+            <div class="tip">
 
-                <div class="feedback-box">
+                <strong>A</strong>
 
-                    <div class="box-heading">
-                        <span>✓</span>
-                        <h3>Your strengths</h3>
-                    </div>
-
-                    <ul id="strengthsList"></ul>
-
-                </div>
-
-
-                <div class="feedback-box">
-
-                    <div class="box-heading">
-                        <span>↑</span>
-                        <h3>What to improve</h3>
-                    </div>
-
-                    <ul id="improvementsList"></ul>
-
-                </div>
+                <span>
+                    <b>Action</b>
+                    — Explain what you did.
+                </span>
 
             </div>
 
 
-            <div class="model-answer">
+            <div class="tip">
 
-                <p class="eyebrow">
-                    STRONGER VERSION
-                </p>
+                <strong>R</strong>
 
-                <h3>
-                    Example of a stronger answer
-                </h3>
-
-                <p id="modelAnswer">
-                    —
-                </p>
+                <span>
+                    <b>Result</b>
+                    — Show what happened.
+                </span>
 
             </div>
 
+        </aside>
 
-            <div class="feedback-actions">
+    </div>
 
-                <button
-                    id="nextQuestion"
-                    class="primary-button"
-                >
-                    Next Question →
-                </button>
-
-                <button
-                    id="tryAgain"
-                    class="secondary-button"
-                >
-                    Try This Question Again
-                </button>
-
-            </div>
-
-        </section>
+</section>
 
 
-        <!-- =========================
-             HISTORY
-        ========================== -->
+<!-- LOADING -->
 
-        <section id="history" class="section history-section">
+<section
+    id="loading"
+    class="loading-section hidden"
+>
 
-            <div class="section-heading">
+    <div class="loader"></div>
 
-                <p class="eyebrow">
-                    YOUR PROGRESS
-                </p>
+    <h2>
+        Elevate AI is reviewing your answer...
+    </h2>
 
-                <h2>
-                    Practice history.
-                </h2>
+    <p>
+        Analyzing clarity, relevance, specificity,
+        communication, and impact.
+    </p>
 
-                <p>
-                    Every answer is another step toward feeling prepared.
-                </p>
-
-            </div>
+</section>
 
 
-            <div id="historyList" class="history-list">
+<!-- FEEDBACK -->
 
-                <div class="empty-history">
-                    <span>✦</span>
+<section
+    id="feedback"
+    class="section feedback-section hidden"
+>
 
-                    <h3>
-                        No practice sessions yet.
-                    </h3>
+    <div class="section-heading">
 
-                    <p>
-                        Complete your first question and your progress
-                        will appear here.
-                    </p>
-                </div>
+        <p class="eyebrow">
+            STEP 03
+        </p>
 
-            </div>
+        <h2>
+            Here's how you did.
+        </h2>
 
-        </section>
+        <p>
+            Personalized feedback generated by Elevate AI.
+        </p>
 
-    </main>
+    </div>
 
 
-    <!-- =========================
-         FOOTER
-    ========================== -->
+    <div class="feedback-grid">
 
-    <footer>
+        <div class="score-card featured">
 
-        <div>
+            <span>
+                OVERALL
+            </span>
 
-            <div class="footer-logo">
-                ele<span>vate</span>
-            </div>
+            <strong id="overallScore">
+                —
+            </strong>
 
-            <p>
-                Practice smarter. Interview stronger.
+            <p id="overallComment">
+                Your score will appear here.
             </p>
 
         </div>
 
-        <p>
-            © 2026 Elevate
+
+        <div class="score-card">
+
+            <span>
+                COMMUNICATION
+            </span>
+
+            <strong id="communicationScore">
+                —
+            </strong>
+
+            <p>
+                How clearly you expressed your ideas.
+            </p>
+
+        </div>
+
+
+        <div class="score-card">
+
+            <span>
+                RELEVANCE
+            </span>
+
+            <strong id="relevanceScore">
+                —
+            </strong>
+
+            <p>
+                How directly you answered the question.
+            </p>
+
+        </div>
+
+
+        <div class="score-card">
+
+            <span>
+                SPECIFICITY
+            </span>
+
+            <strong id="specificityScore">
+                —
+            </strong>
+
+            <p>
+                How effectively you used concrete examples.
+            </p>
+
+        </div>
+
+    </div>
+
+
+    <div class="feedback-columns">
+
+        <div class="feedback-box">
+
+            <div class="box-heading">
+
+                <span>✓</span>
+
+                <h3>
+                    Your strengths
+                </h3>
+
+            </div>
+
+            <ul id="strengthsList"></ul>
+
+        </div>
+
+
+        <div class="feedback-box">
+
+            <div class="box-heading">
+
+                <span>↑</span>
+
+                <h3>
+                    What to improve
+                </h3>
+
+            </div>
+
+            <ul id="improvementsList"></ul>
+
+        </div>
+
+    </div>
+
+
+    <div class="model-answer">
+
+        <p class="eyebrow">
+            STRONGER VERSION
         </p>
 
-    </footer>
+        <h3>
+            Example of a stronger answer
+        </h3>
+
+        <p id="modelAnswer">
+            —
+        </p>
+
+    </div>
 
 
-    <script src="script.js"></script>
+    <div class="feedback-actions">
+
+        <button
+            id="nextQuestion"
+            class="primary-button"
+            type="button"
+        >
+            Next Question
+            <span>→</span>
+        </button>
+
+        <button
+            id="tryAgain"
+            class="secondary-button"
+            type="button"
+        >
+            Try This Question Again
+        </button>
+
+    </div>
+
+</section>
+
+
+<!-- HISTORY -->
+
+<section
+    id="history"
+    class="section history-section"
+>
+
+    <div class="section-heading">
+
+        <p class="eyebrow">
+            YOUR PROGRESS
+        </p>
+
+        <h2>
+            Practice history.
+        </h2>
+
+        <p>
+            Every answer is another step toward feeling prepared.
+        </p>
+
+    </div>
+
+
+    <div
+        id="historyList"
+        class="history-list"
+    >
+
+        <div class="empty-history">
+
+            <span>✦</span>
+
+            <h3>
+                No practice sessions yet.
+            </h3>
+
+            <p>
+                Complete your first question and
+                your progress will appear here.
+            </p>
+
+        </div>
+
+    </div>
+
+</section>
+
+</main>
+
+
+<footer>
+
+    <div>
+
+        <div class="footer-logo">
+            ele<span>vate</span>
+        </div>
+
+        <p>
+            Practice smarter. Interview stronger.
+        </p>
+
+    </div>
+
+    <p>
+        © 2026 Elevate
+    </p>
+
+</footer>
+
+
+<script src="script.js"></script>
 
 </body>
 </html>
