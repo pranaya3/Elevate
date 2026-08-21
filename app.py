@@ -1,33 +1,23 @@
 import os
-import json
 
 from flask import Flask, request, jsonify, send_from_directory
 from flask_cors import CORS
 from openai import OpenAI
 from dotenv import load_dotenv
 
-# Load environment variables
 load_dotenv()
-
-# --------------------------------------------------
-# FLASK APP
-# --------------------------------------------------
 
 app = Flask(__name__)
 CORS(app)
 
 # --------------------------------------------------
-# OPENAI CONFIGURATION
+# OPENAI
 # --------------------------------------------------
 
 api_key = os.getenv("OPENAI_API_KEY")
 
-if not api_key:
-    print("WARNING: OPENAI_API_KEY is not configured.")
-
 client = OpenAI(api_key=api_key) if api_key else None
 
-# Current OpenAI model
 MODEL = os.getenv("OPENAI_MODEL", "gpt-5.6-luna")
 
 
@@ -56,13 +46,11 @@ def static_files(filename):
 @app.route("/api/feedback", methods=["POST"])
 def feedback():
 
-    # Check API key
     if client is None:
         return jsonify({
-            "error": "OPENAI_API_KEY is not configured on the server."
+            "error": "OPENAI_API_KEY is not configured."
         }), 500
 
-    # Get request data
     data = request.get_json(silent=True)
 
     if not data:
@@ -70,7 +58,6 @@ def feedback():
             "error": "No request data was provided."
         }), 400
 
-    # Get candidate information
     name = data.get("name", "Candidate")
     job = data.get("job", "Job applicant")
     company = data.get("company", "")
@@ -81,47 +68,28 @@ def feedback():
     question = data.get("question", "")
     answer = data.get("answer", "")
 
-    # Validate question
     if not question.strip():
         return jsonify({
             "error": "Interview question is required."
         }), 400
 
-    # Validate answer
     if not answer.strip():
         return jsonify({
             "error": "Interview answer is required."
         }), 400
 
     # --------------------------------------------------
-    # AI PROMPT
+    # AI INSTRUCTIONS
     # --------------------------------------------------
 
-    prompt = f"""
+    instructions = """
 You are Elevate, an AI-powered interview coach.
 
-Evaluate the candidate's interview answer and provide
-clear, encouraging, practical feedback.
+Evaluate an interview candidate's answer.
 
-Candidate:
-{name}
+Give practical, encouraging, honest feedback.
 
-Position:
-{job}
-
-Company:
-{company or "Not provided"}
-
-Interview type:
-{interview_type}
-
-Interview question:
-{question}
-
-Candidate answer:
-{answer}
-
-Evaluate the answer based on:
+Evaluate:
 
 1. Communication
 2. Relevance
@@ -129,127 +97,137 @@ Evaluate the answer based on:
 4. Structure
 5. Confidence
 6. Evidence of impact
-7. Use of the STAR method when appropriate
+7. STAR method when appropriate
 
-Give the candidate an overall score from 0 to 100.
+Do not invent experiences.
 
-Return ONLY valid JSON.
+Keep feedback easy for a college student to understand.
 
-Use exactly this structure:
-
-{{
-    "overall_score": 0,
-    "communication_score": 0,
-    "relevance_score": 0,
-    "specificity_score": 0,
-    "overall_comment": "Short overall evaluation.",
-    "strengths": [
-        "Strength one.",
-        "Strength two.",
-        "Strength three."
-    ],
-    "improvements": [
-        "Improvement one.",
-        "Improvement two.",
-        "Improvement three."
-    ],
-    "stronger_answer": "A concise example showing how the candidate could improve their answer."
-}}
-
-Rules:
-
-- All scores must be integers from 0 to 100.
-- Be constructive rather than harsh.
-- Do not invent experiences for the candidate.
-- Preserve the candidate's original story.
-- Do not add experiences the candidate did not mention.
-- If information is missing, explain what is missing.
-- Keep the feedback easy for a college student to understand.
+The stronger answer should preserve the candidate's
+actual experience and should not invent achievements.
 """
 
+    input_text = f"""
+Candidate: {name}
+
+Position: {job}
+
+Company: {company or "Not provided"}
+
+Interview type: {interview_type}
+
+Question:
+{question}
+
+Candidate answer:
+{answer}
+"""
 
     # --------------------------------------------------
-    # CALL OPENAI
+    # STRUCTURED RESPONSE
     # --------------------------------------------------
 
     try:
 
         response = client.responses.create(
+
             model=MODEL,
-            input=prompt
+
+            instructions=instructions,
+
+            input=input_text,
+
+            text={
+                "format": {
+                    "type": "json_schema",
+                    "name": "interview_feedback",
+                    "strict": True,
+                    "schema": {
+                        "type": "object",
+                        "properties": {
+
+                            "overall_score": {
+                                "type": "integer",
+                                "minimum": 0,
+                                "maximum": 100
+                            },
+
+                            "communication_score": {
+                                "type": "integer",
+                                "minimum": 0,
+                                "maximum": 100
+                            },
+
+                            "relevance_score": {
+                                "type": "integer",
+                                "minimum": 0,
+                                "maximum": 100
+                            },
+
+                            "specificity_score": {
+                                "type": "integer",
+                                "minimum": 0,
+                                "maximum": 100
+                            },
+
+                            "overall_comment": {
+                                "type": "string"
+                            },
+
+                            "strengths": {
+                                "type": "array",
+                                "items": {
+                                    "type": "string"
+                                }
+                            },
+
+                            "improvements": {
+                                "type": "array",
+                                "items": {
+                                    "type": "string"
+                                }
+                            },
+
+                            "stronger_answer": {
+                                "type": "string"
+                            }
+                        },
+
+                        "required": [
+                            "overall_score",
+                            "communication_score",
+                            "relevance_score",
+                            "specificity_score",
+                            "overall_comment",
+                            "strengths",
+                            "improvements",
+                            "stronger_answer"
+                        ],
+
+                        "additionalProperties": False
+                    }
+                }
+            }
         )
 
-        output = response.output_text.strip()
+        result = response.output_text
 
-        # Remove markdown code fences if the AI adds them
-        if output.startswith("```"):
-
-            output = output.replace(
-                "```json",
-                ""
-            )
-
-            output = output.replace(
-                "```",
-                ""
-            )
-
-            output = output.strip()
-
-        # Convert AI response to JSON
-        result = json.loads(output)
-
-        # --------------------------------------------------
-        # VALIDATE RESPONSE
-        # --------------------------------------------------
-
-        required_fields = [
-            "overall_score",
-            "communication_score",
-            "relevance_score",
-            "specificity_score",
-            "overall_comment",
-            "strengths",
-            "improvements",
-            "stronger_answer"
-        ]
-
-        for field in required_fields:
-
-            if field not in result:
-                raise ValueError(
-                    f"AI response is missing field: {field}"
-                )
-
-        # Return successful response
-        return jsonify(result), 200
-
-
-    except json.JSONDecodeError as error:
-
-        print("JSON ERROR:", error)
-        print("AI OUTPUT:", output if "output" in locals() else "No output")
-
-        return jsonify({
-            "error": "The AI returned an invalid response.",
-            "details": str(error)
-        }), 500
+        return jsonify(
+            __import__("json").loads(result)
+        ), 200
 
 
     except Exception as error:
 
-        # THIS IS IMPORTANT:
-        # Render logs will now show the actual error.
-
-        print("===================================")
-        print("OPENAI API ERROR")
-        print("===================================")
+        print("================================")
+        print("ELEVATE AI ERROR")
+        print("================================")
         print(type(error).__name__)
         print(str(error))
-        print("===================================")
+        print("================================")
 
         return jsonify({
-            "error": "Elevate AI could not generate feedback.",
+            "error": "AI feedback failed.",
             "details": str(error)
         }), 500
 
@@ -258,7 +236,7 @@ Rules:
 # HEALTH CHECK
 # --------------------------------------------------
 
-@app.route("/api/health", methods=["GET"])
+@app.route("/api/health")
 def health():
 
     return jsonify({
@@ -269,7 +247,7 @@ def health():
 
 
 # --------------------------------------------------
-# RUN SERVER
+# RUN
 # --------------------------------------------------
 
 if __name__ == "__main__":
